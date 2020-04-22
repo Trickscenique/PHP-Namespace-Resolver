@@ -32,7 +32,7 @@ class Resolver {
         let useStatements = this.getUseStatementsArray();
 
         for (let phpClass of phpClasses) {
-            if (! useStatements.includes(phpClass)) {
+            if (!useStatements.includes(phpClass)) {
                 await this.importCommand(phpClass);
             }
         }
@@ -163,7 +163,7 @@ class Resolver {
 
         // Get phpClasses not present in importedPhpClasses
         let notUsed = importedPhpClasses.filter(function (phpClass) {
-            return ! phpClasses.includes(phpClass);
+            return !phpClasses.includes(phpClass);
         });
 
         // Highlight diff
@@ -410,7 +410,7 @@ class Resolver {
                     let namespace = textLine.match(/^(namespace|(<\?php namespace))\s+(.+)?;/).pop();
                     let fqcn = `${namespace}\\${resolving}`;
 
-                    if (! parsedNamespaces.includes(fqcn)) {
+                    if (!parsedNamespaces.includes(fqcn)) {
                         parsedNamespaces.push(fqcn);
                         break;
                     }
@@ -434,7 +434,7 @@ class Resolver {
     }
 
     sortImports() {
-        let [useStatements,] = this.getDeclarations();
+        let [useStatements, ] = this.getDeclarations();
 
         if (useStatements.length <= 1) {
             throw new Error('$(issue-opened)  Nothing to sort.');
@@ -537,7 +537,10 @@ class Resolver {
             } else if (text.startsWith('namespace ') || text.startsWith('<?php namespace')) {
                 declarationLines.namespace = line + 1;
             } else if (text.startsWith('use ')) {
-                useStatements.push({ text, line });
+                useStatements.push({
+                    text,
+                    line
+                });
                 declarationLines.useStatement = line + 1;
             } else if (/(class|trait|interface)\s+\w+/.test(text)) {
                 declarationLines.class = line + 1;
@@ -565,8 +568,8 @@ class Resolver {
 
         if (declarationLines.class !== null &&
             ((declarationLines.class - declarationLines.useStatement) <= 1 ||
-            (declarationLines.class - declarationLines.namespace) <= 1 ||
-            (declarationLines.class - declarationLines.PHPTag) <= 1)
+                (declarationLines.class - declarationLines.namespace) <= 1 ||
+                (declarationLines.class - declarationLines.PHPTag) <= 1)
         ) {
             append = '\n\n';
         }
@@ -615,7 +618,7 @@ class Resolver {
         let currentPath = currentFile.substr(0, currentFile.lastIndexOf('/'));
         let composerFile = await vscode.workspace.findFiles('composer.json');
 
-        if (! composerFile.length) {
+        if (!composerFile.length) {
             return this.showErrorMessage('No composer.json file found, automatic namespace generation failed');
         }
 
@@ -632,7 +635,10 @@ class Resolver {
             let devPsr4 = (composerJson['autoload-dev'] || {})['psr-4'];
 
             if (devPsr4 !== undefined) {
-                psr4 = {...psr4, ...devPsr4};
+                psr4 = {
+                    ...psr4,
+                    ...devPsr4
+                };
             }
 
             let namespaceBase = Object.keys(psr4).filter(function (namespaceBase) {
